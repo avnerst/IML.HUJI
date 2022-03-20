@@ -1,3 +1,5 @@
+import mkl_random
+
 from IMLearn.learners import UnivariateGaussian, MultivariateGaussian
 import numpy as np
 import plotly.graph_objects as go
@@ -48,10 +50,20 @@ def test_univariate_gaussian():
 
 def test_multivariate_gaussian():
     # Question 4 - Draw samples and print fitted model
-    raise NotImplementedError()
+    mu = np.array([0, 0, 4, 0])
+    cov = np.array([[1, 0.2, 0, 0.5],
+                    [0.2, 2, 0, 0],
+                    [0, 0, 1, 0],
+                    [0.5, 0, 0, 1]])
+    X = mkl_random.multivariate_normal(mu, cov, SAMPLE_SIZE)
+    multy = MultivariateGaussian()
+    multy.fit(X)
+    print("estimated mu:", multy.mu_)
+    print("estimated cov:", multy.cov_)
 
-    # Question 5 - Likelihood evaluation
-    raise NotImplementedError()
+    #Question 5 - Likelihood evaluation
+    vals_for_mu = np.linspace(-10, 10, 200)
+    loglike
 
     # Question 6 - Maximum likelihood
     raise NotImplementedError()
