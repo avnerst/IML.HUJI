@@ -6,6 +6,8 @@ import plotly.io as pio
 from plotly.subplots import make_subplots
 pio.templates.default = "simple_white"
 
+import plotly.express as px
+
 
 def load_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
     """
@@ -26,7 +28,10 @@ def load_dataset(filename: str) -> Tuple[np.ndarray, np.ndarray]:
         Class vector specifying for each sample its class
 
     """
-    raise NotImplementedError()
+    all_data = np.load(filename)
+    X, y = all_data[:, [0, 1]], all_data[:, [2]]
+    y = np.reshape(y, (y.shape[0]))
+    return X, y
 
 
 def run_perceptron():
@@ -38,14 +43,26 @@ def run_perceptron():
     """
     for n, f in [("Linearly Separable", "linearly_separable.npy"), ("Linearly Inseparable", "linearly_inseparable.npy")]:
         # Load dataset
-        raise NotImplementedError()
+        file_path = "../datasets/" + f
+        X, y = load_dataset(file_path)
+
 
         # Fit Perceptron and record loss in each fit iteration
         losses = []
-        raise NotImplementedError()
+
+        def loss_callback(perceptron: Perceptron, a, b): # TODO: change so the main algorithm doesnt send the two arguments?
+            loss = perceptron._loss(X, y)
+            losses.append(loss)
+
+        percepetron = Perceptron(callback=loss_callback)
+        percepetron._fit(X,y)
 
         # Plot figure
-        raise NotImplementedError()
+        fig = px.line(y=losses,
+                      title=n)
+        fig.update_layout(xaxis_title="number of training iterations",
+                         yaxis_title="loss")
+        fig.show()
 
 
 def compare_gaussian_classifiers():
@@ -68,4 +85,4 @@ def compare_gaussian_classifiers():
 if __name__ == '__main__':
     np.random.seed(0)
     run_perceptron()
-    compare_gaussian_classifiers()
+    # compare_gaussian_classifiers()

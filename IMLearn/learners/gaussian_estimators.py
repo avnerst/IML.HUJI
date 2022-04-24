@@ -217,7 +217,7 @@ class MultivariateGaussian:
         cov_inv = np.linalg.inv(cov)
 
         for x_i in X:
-            sum += (x_i - mu) @ cov_inv @ (x_i - mu).T # TODO: fix this line, outputs seem very high
+            sum += (x_i - mu) @ cov_inv @ (x_i - mu).T
 
         return -0.5*(m*np.log(np.power((2 * np.pi),d) * cov_det) + sum)
 
