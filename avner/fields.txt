@@ -1,0 +1,11 @@
+'id', - remove
+ 'date', - maybe split to three different 
+ 
+, 'waterfront', 
+
+ 'sqft_above', - maybe precent (divide by sqrt_living)
+       'sqft_basement - maybe precent (divide by sqrt_living)'
+, 'yr_built' - check from problem values
+ 'yr_renovated', - 2022 - years since renovation or building
+ 'zipcode' - mean of some over zip code
+,       dtype='object')
