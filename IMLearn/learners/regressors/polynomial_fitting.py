@@ -9,7 +9,7 @@ class PolynomialFitting(LinearRegression):
     """
     Polynomial Fitting using Least Squares estimation
     """
-    def __init__(self, k: int) -> PolynomialFitting: #TODO: how to treat includ intercept
+    def __init__(self, k: int) -> PolynomialFitting:
         """
         Instantiate a polynomial fitting estimator
 
@@ -18,10 +18,10 @@ class PolynomialFitting(LinearRegression):
         k : int
             Degree of polynomial to fit
         """
-        super().__init__(include_intercept=False) #TODO: check if correct
+        super().__init__(include_intercept=False)
         self.k_ = k
 
-    def _fit(self, X: np.ndarray, y: np.ndarray) -> NoReturn: #TODO: use transform
+    def _fit(self, X: np.ndarray, y: np.ndarray) -> NoReturn:
         """
         Fit Least Squares model to polynomial transformed samples
 
@@ -37,7 +37,7 @@ class PolynomialFitting(LinearRegression):
         X_k = self.__transform(X)
         super()._fit(X_k, y)
 
-    def _predict(self, X: np.ndarray) -> np.ndarray: #TODO: can i not implement and call parent class
+    def _predict(self, X: np.ndarray) -> np.ndarray:
         """
         Predict responses for given samples using fitted estimator
 

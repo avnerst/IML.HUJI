@@ -43,7 +43,7 @@ def load_data(filename: str):
     #update data to fit model
     prices = all_data['price']
     house_features = all_data
-    house_features['yr_sold'] = house_features.date.str.slice(0,4).astype(str).astype(int) #TODO:  convert to int!!! fix!
+    house_features['yr_sold'] = house_features.date.str.slice(0,4).astype(str).astype(int)
     house_features['month_sold'] = house_features.date.str.slice(4,6).astype(str).astype(int)
     house_features['day_sold'] = house_features.date.str.slice(6,8).astype(str).astype(int)
     house_features['precent_above'] = house_features['sqft_above'] / house_features['sqft_living']

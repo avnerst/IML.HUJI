@@ -8,7 +8,8 @@ import exercises.house_price_prediction as hpp
 import pandas as pd
 import IMLearn.learners.regressors.polynomial_fitting as pf
 import exercises.city_temperature_prediction as ctp
-
+import IMLearn.learners.classifiers.gaussian_naive_bayes as gnb
+import IMLearn.learners.classifiers.linear_discriminant_analysis as lda
 
 def test_MLE():
     y_true = np.arange(10)
@@ -56,9 +57,45 @@ def test_miss_calssification():
     print(f" regular:{lf.misclassification_error(x1,x2,False)}")
     print(f" normalized:{lf.misclassification_error(x1,x2)}")
 
-if __name__ == '__main__':
-    test_miss_calssification()
 
+def test_accuracy():
+    x1 = np.array([1, -1, -1])
+    x2 = np.array([1, 1, -1])
+    print(lf.accuracy(x1, x2))
+
+def test_unique():
+    X = np.arange(25)
+    X = X.reshape((5,5))
+    y = np.array([1,3,1,2,2])
+    classes, index, inverse = np.unique(y, return_index=True, return_inverse=True)
+    print(index)
+    print (X[index])
+
+def test_fitting_1():
+    X = np.array([0,1,2,3,4,5,6,7]).reshape((8,1))
+    y = np.array([0,0,1,1,1,1,2,2])
+
+    gnb_model = gnb.GaussianNaiveBayes()
+    gnb_model._fit(X, y)
+
+    print("pi:")
+    print(gnb_model.pi_)
+
+    print("mu:")
+    print(gnb_model.mu_)
+
+def test_fitting_2():
+    X = np.array([[1,1],[1,2],[2,3],[2,4],[3,3],[3,4]])
+    y = np.array([0,0,1,1,1,1])
+
+    gnb_model = gnb.GaussianNaiveBayes()
+    gnb_model._fit(X, y)
+
+    print("var:")
+    print(gnb_model.vars_)
+
+if __name__ == '__main__':
+    test_fitting_2()
 
 
 
