@@ -3,6 +3,8 @@ from typing import Tuple, NoReturn
 from ...base import BaseEstimator
 import numpy as np
 from itertools import product
+from IMLearn.metrics.loss_functions import misclassification_error
+
 
 
 class DecisionStump(BaseEstimator):
@@ -20,6 +22,7 @@ class DecisionStump(BaseEstimator):
     self.sign_: int
         The label to predict for samples where the value of the j'th feature is about the threshold
     """
+
     def __init__(self) -> DecisionStump:
         """
         Instantiate a Decision stump classifier
@@ -39,7 +42,25 @@ class DecisionStump(BaseEstimator):
         y : ndarray of shape (n_samples, )
             Responses of input data to fit to
         """
-        raise NotImplementedError()
+        # initialize variables
+        d = X.shape[1]
+        thrs = np.zeros(d)
+        losses = np.zeros(d)
+        signs = np.ones(d)
+
+        for i in np.arange(d):
+            # calculate for sign = 1
+            thrs[i], losses[i] = self._find_threshold(X[:, i], y, 1)
+            # calculate for sign = -1
+            negative_thr, negative_loss = self._find_threshold(X[:, i], y, -1)
+            # check which sign preformed better
+            if negative_loss < losses[i]:
+                thrs[i], losses[i], signs[i] = negative_thr, negative_loss, -1
+
+        self.j_ = np.argmin(losses)
+        self.threshold_ = thrs[self.j_]
+        self.sign_ = signs[self.j_]
+        self.fitted_ = True
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -63,7 +84,16 @@ class DecisionStump(BaseEstimator):
         Feature values strictly below threshold are predicted as `-sign` whereas values which equal
         to or above the threshold are predicted as `sign`
         """
-        raise NotImplementedError()
+        # initialize predictions
+        m = X.shape[0]
+        y_hat = np.full(m, -1 * self.sign_)
+
+        # update predictions
+        y_hat[X[:, self.j_] >= self.threshold_] = self.sign_
+
+        return y_hat
+
+
 
     def _find_threshold(self, values: np.ndarray, labels: np.ndarray, sign: int) -> Tuple[float, float]:
         """
@@ -95,7 +125,30 @@ class DecisionStump(BaseEstimator):
         For every tested threshold, values strictly below threshold are predicted as `-sign` whereas values
         which equal to or above the threshold are predicted as `sign`
         """
-        raise NotImplementedError()
+        m = values.shape[0]
+        all_sign = np.full(m, sign)
+
+        # initialize loss
+        min_loss = self._weighted_loss(labels, all_sign)
+        thr = -np.inf
+
+        unique = np.unique(values)
+
+        for val in unique:
+            y_hat = np.full(m, sign)
+            y_hat[values < val] = -sign
+            loss = self._weighted_loss(labels, y_hat)
+            if loss < min_loss:
+                thr = val
+                min_loss = loss
+
+        # check if loss is simillar when they are all -sign
+        all_minus_sign = all_sign = np.full(m, -sign)
+        all_minus_loss = self._weighted_loss(labels, all_minus_sign)
+        if all_minus_loss == min_loss:
+            thr = np.inf
+
+        return thr, min_loss
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -114,4 +167,12 @@ class DecisionStump(BaseEstimator):
         loss : float
             Performance under missclassification loss function
         """
-        raise NotImplementedError()
+        return misclassification_error(y, self._predict(X))
+
+    def _weighted_loss(self, y: np.ndarray, y_hat: np.ndarray) -> float:
+        """
+        returns weighted loss of y_hat predictions over y real labels
+        """
+        m = y.shape[0]
+        indices = (y * y_hat < 0)
+        return np.sum(np.abs(y[indices])) / m
