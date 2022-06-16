@@ -37,4 +37,26 @@ def cross_validate(estimator: BaseEstimator, X: np.ndarray, y: np.ndarray,
     validation_score: float
         Average validation score over folds
     """
-    raise NotImplementedError()
+    # split train data into subgroups
+    X_subgroups = np.array_split(X, cv)
+    y_subgroups = np.array_split(y, cv)
+
+
+    # iterate over different groups of k fold
+    train_loss_sum = 0
+    validation_loss_sum = 0
+    for i in np.arange(cv):
+        # create k-fold subgroups
+        X_train_sub = np.concatenate(X_subgroups[:i] + X_subgroups[i + 1:])
+        y_train_sub = np.concatenate(y_subgroups[:i] + y_subgroups[i + 1:])
+        estimator.fit(X_train_sub, y_train_sub)
+
+        # calc 2 losses
+        train_loss_sum += scoring(y_train_sub, estimator.predict(X_train_sub))
+        validation_loss_sum += scoring(y_subgroups[i],estimator.predict(X_subgroups[i]))
+
+    # calc average losses
+    train_score = train_loss_sum / cv
+    validation_score = validation_loss_sum / cv
+
+    return train_score, validation_score
